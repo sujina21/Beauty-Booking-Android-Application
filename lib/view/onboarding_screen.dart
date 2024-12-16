@@ -44,6 +44,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
+  void _onSkipPressed() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,6 +119,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ? "Get Started"
                     : "Next",
                 style: const TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+          ),
+          // Skip button added here
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: TextButton(
+              onPressed: _onSkipPressed,
+              child: const Text(
+                "Skip",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFFEE3A60),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
