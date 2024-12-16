@@ -141,7 +141,7 @@ class RegisterScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    "Already have an account? ",
+                    "Do you already have an account? ",
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey,
