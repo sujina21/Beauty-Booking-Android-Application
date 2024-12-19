@@ -6,67 +6,81 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Updated to match Login page
+      backgroundColor: const Color(0xFFFDF2F8), // Matches onboarding page
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // App Logo
+              Image.asset(
+                'lib/assets/image/bnw.png',
+                height: 120,
+              ),
               const SizedBox(height: 20),
               // Title and Subtitle
               const Text(
                 "Create Your Account",
                 style: TextStyle(
-                  fontSize: 32,
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  fontFamily: 'Poppins',
+                  color: Color(0xFF8B5E83),
+                  fontFamily: 'PlayfairDisplay',
                 ),
               ),
               const SizedBox(height: 10),
               const Text(
-                "Join us to unlock premium features!",
+                "Join us and start your beauty journey today!",
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.grey,
-                  fontFamily: 'Poppins',
+                  color: Color(0xFF4B4B4B),
+                  fontFamily: 'OpenSans',
                 ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
               // Form Fields
               Form(
                 child: Column(
                   children: [
-                    // Name Input
+                    // Full Name Input
                     TextField(
                       decoration: InputDecoration(
                         labelText: 'Full Name',
                         labelStyle: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
+                          color: Color(0xFF8B5E83),
+                          fontFamily: 'OpenSans',
+                          fontWeight: FontWeight.w600,
                         ),
+                        filled: true,
+                        fillColor: Colors.white,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0),
+                          borderRadius: BorderRadius.circular(25.0),
+                          borderSide: BorderSide.none,
                         ),
                         prefixIcon:
-                            const Icon(Icons.person, color: Colors.black),
+                            const Icon(Icons.person, color: Color(0xFF8B5E83)),
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Email Input
+                    // Email Address Input
                     TextField(
                       decoration: InputDecoration(
                         labelText: 'Email Address',
                         labelStyle: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
+                          color: Color(0xFF8B5E83),
+                          fontFamily: 'OpenSans',
+                          fontWeight: FontWeight.w600,
                         ),
+                        filled: true,
+                        fillColor: Colors.white,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0),
+                          borderRadius: BorderRadius.circular(25.0),
+                          borderSide: BorderSide.none,
                         ),
                         prefixIcon:
-                            const Icon(Icons.email, color: Colors.black),
+                            const Icon(Icons.email, color: Color(0xFF8B5E83)),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -76,13 +90,18 @@ class RegisterScreen extends StatelessWidget {
                       decoration: InputDecoration(
                         labelText: 'Password',
                         labelStyle: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
+                          color: Color(0xFF8B5E83),
+                          fontFamily: 'OpenSans',
+                          fontWeight: FontWeight.w600,
                         ),
+                        filled: true,
+                        fillColor: Colors.white,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0),
+                          borderRadius: BorderRadius.circular(25.0),
+                          borderSide: BorderSide.none,
                         ),
-                        prefixIcon: const Icon(Icons.lock, color: Colors.black),
+                        prefixIcon:
+                            const Icon(Icons.lock, color: Color(0xFF8B5E83)),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -92,46 +111,44 @@ class RegisterScreen extends StatelessWidget {
                       decoration: InputDecoration(
                         labelText: 'Confirm Password',
                         labelStyle: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
+                          color: Color(0xFF8B5E83),
+                          fontFamily: 'OpenSans',
+                          fontWeight: FontWeight.w600,
                         ),
+                        filled: true,
+                        fillColor: Colors.white,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0),
+                          borderRadius: BorderRadius.circular(25.0),
+                          borderSide: BorderSide.none,
                         ),
-                        prefixIcon:
-                            const Icon(Icons.lock_outline, color: Colors.black),
+                        prefixIcon: const Icon(Icons.lock_outline,
+                            color: Color(0xFF8B5E83)),
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 40),
-              // Sign-Up Button with Gradient
-              GestureDetector(
-                onTap: () {
+              // Sign-Up Button
+              ElevatedButton(
+                onPressed: () {
                   // Handle sign-up logic here
                 },
-                child: Container(
-                  width: double.infinity,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Colors.black, Colors.grey],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(30),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFEE3A60),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25.0),
                   ),
-                  child: const Center(
-                    child: Text(
-                      "Sign Up",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
+                ),
+                child: const Text(
+                  "Sign Up",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'PlayfairDisplay',
                   ),
                 ),
               ),
@@ -141,11 +158,11 @@ class RegisterScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    "Do you already have an account? ",
+                    "Already have an account? ",
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey,
-                      fontFamily: 'Poppins',
+                      color: Color(0xFF4B4B4B),
+                      fontFamily: 'OpenSans',
                     ),
                   ),
                   GestureDetector(
@@ -156,9 +173,9 @@ class RegisterScreen extends StatelessWidget {
                       "Log In",
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.black,
+                        color: Color(0xFFEE3A60),
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins',
+                        fontFamily: 'Raleway',
                       ),
                     ),
                   ),
