@@ -9,25 +9,25 @@ class MakeupScreen extends StatelessWidget {
     // Makeup Services Data
     final List<Map<String, String>> makeupServices = [
       {
-        'image': 'lib/assets/image/bridal_makeup.jpg',
+        'image': 'assets/image/bridal_makeup.jpg',
         'type': 'Bridal Makeup',
         'description': 'Get a flawless bridal look on your special day.',
         'price': 'NRS 12,000'
       },
       {
-        'image': 'lib/assets/image/engagement_makeup.jpg',
+        'image': 'assets/image/engagement_makeup.jpg',
         'type': 'Engagement Makeup',
         'description': 'Perfect makeup for your engagement ceremony.',
         'price': 'NRS 8,000'
       },
       {
-        'image': 'lib/assets/image/mehendi_makeup.jpg',
+        'image': 'assets/image/mehendi_makeup.jpg',
         'type': 'Mehendi Makeup',
         'description': 'Traditional makeup for your mehendi event.',
         'price': 'NRS 6,000'
       },
       {
-        'image': 'lib/assets/image/glam_party_makeup.jpg',
+        'image': 'assets/image/glam_party_makeup.jpg',
         'type': 'Glam Party Makeup',
         'description': 'Glamorous look for parties and events.',
         'price': 'NRS 5,000'
