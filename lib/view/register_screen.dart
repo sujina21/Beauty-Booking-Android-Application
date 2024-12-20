@@ -15,7 +15,7 @@ class RegisterScreen extends StatelessWidget {
             children: [
               // App Logo
               Image.asset(
-                'lib/assets/image/bnw.png',
+                'assets/image/bnw.png',
                 height: 120,
               ),
               const SizedBox(height: 20),
