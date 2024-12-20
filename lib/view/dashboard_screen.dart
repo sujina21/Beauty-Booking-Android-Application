@@ -8,22 +8,18 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF2F8),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFDF2F8), // Transparent app bar
         elevation: 0,
         centerTitle: true,
         title: const Text(
           "The Beauty Aesthetics",
           style: TextStyle(
-            fontFamily: 'Montserrat-Italic',
-            color: Colors.black,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
-      body: const HomeScreen(), 
+      body: const HomeScreen(),
     );
   }
 }

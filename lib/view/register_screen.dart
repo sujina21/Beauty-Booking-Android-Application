@@ -6,7 +6,6 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF2F8), // Matches onboarding page
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -26,7 +25,6 @@ class RegisterScreen extends StatelessWidget {
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF8B5E83),
-                  fontFamily: 'PlayfairDisplay',
                 ),
               ),
               const SizedBox(height: 10),
@@ -35,7 +33,6 @@ class RegisterScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   color: Color(0xFF4B4B4B),
-                  fontFamily: 'OpenSans',
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -50,7 +47,6 @@ class RegisterScreen extends StatelessWidget {
                         labelText: 'Full Name',
                         labelStyle: const TextStyle(
                           color: Color(0xFF8B5E83),
-                          fontFamily: 'OpenSans',
                           fontWeight: FontWeight.w600,
                         ),
                         filled: true,
@@ -70,7 +66,6 @@ class RegisterScreen extends StatelessWidget {
                         labelText: 'Email Address',
                         labelStyle: const TextStyle(
                           color: Color(0xFF8B5E83),
-                          fontFamily: 'OpenSans',
                           fontWeight: FontWeight.w600,
                         ),
                         filled: true,
@@ -112,7 +107,6 @@ class RegisterScreen extends StatelessWidget {
                         labelText: 'Confirm Password',
                         labelStyle: const TextStyle(
                           color: Color(0xFF8B5E83),
-                          fontFamily: 'OpenSans',
                           fontWeight: FontWeight.w600,
                         ),
                         filled: true,
@@ -148,7 +142,6 @@ class RegisterScreen extends StatelessWidget {
                     fontSize: 18,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'PlayfairDisplay',
                   ),
                 ),
               ),
@@ -162,7 +155,6 @@ class RegisterScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       color: Color(0xFF4B4B4B),
-                      fontFamily: 'OpenSans',
                     ),
                   ),
                   GestureDetector(
@@ -175,7 +167,6 @@ class RegisterScreen extends StatelessWidget {
                         fontSize: 14,
                         color: Color(0xFFEE3A60),
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Raleway',
                       ),
                     ),
                   ),
