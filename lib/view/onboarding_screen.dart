@@ -16,17 +16,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     {
       "title": "Welcome to The Beauty Aesthetics",
       "description": "Your beauty journey starts here.",
-      "image": "lib/assets/image/logo.png",
+      "image": "assets/image/logo.png",
     },
     {
       "title": "Explore Our Services",
       "description": "Discover a wide range of beauty treatments.",
-      "image": "lib/assets/image/services.jpg",
+      "image": "assets/image/services.jpg",
     },
     {
       "title": "Book Appointments Easily",
       "description": "Conveniently schedule your sessions.",
-      "image": "lib/assets/image/booking.jpg",
+      "image": "assets/image/booking.jpg",
     },
   ];
 
