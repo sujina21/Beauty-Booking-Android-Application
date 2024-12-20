@@ -8,25 +8,25 @@ class NailsScreen extends StatelessWidget {
     // Nail Services Data
     final List<Map<String, String>> nailServices = [
       {
-        'image': 'lib/assets/image/gel_chrome.jpg',
+        'image': 'assets/image/gel_chrome.jpg',
         'type': 'Gel Nails',
         'art': 'Chrome Nail Art',
         'price': 'NRS 2000'
       },
       {
-        'image': 'lib/assets/image/acrylic_flower.jpg',
+        'image': 'assets/image/acrylic_flower.jpg',
         'type': 'Acrylic Nails',
         'art': 'Flower Nail Art',
         'price': 'NRS 2500'
       },
       {
-        'image': 'lib/assets/image/gel_christmas.jpg',
+        'image': 'assets/image/gel_christmas.jpg',
         'type': 'Gel Nails',
         'art': 'Christmas Nail Art',
         'price': 'NRS 2200'
       },
       {
-        'image': 'lib/assets/image/acrylic_chrome.jpg',
+        'image': 'assets/image/acrylic_chrome.jpg',
         'type': 'Acrylic Nails',
         'art': 'Chrome Nail Art',
         'price': 'NRS 2400'
