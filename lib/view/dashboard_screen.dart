@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'homepage.dart'; // Import home page
+import 'homepage.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -14,8 +14,7 @@ class DashboardScreen extends StatelessWidget {
         title: const Text(
           "The Beauty Aesthetics",
           style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontSize: 25,
           ),
         ),
       ),

@@ -17,39 +17,27 @@ class _LoginScreenState extends State<LoginScreen> {
   // Form key for validation
   final _formKey = GlobalKey<FormState>();
 
-  // Login validation credentials
-  final String _validEmail = "sujinasht307@gmail.com";
-  final String _validPassword = "sujina123";
-
   // Function to handle login
   void _handleLogin() {
     if (_formKey.currentState!.validate()) {
-      // Check credentials
-      if (_emailController.text == _validEmail &&
-          _passwordController.text == _validPassword) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const DashboardScreen(),
-          ),
-        );
-      } else {
-        // Show error if credentials don't match
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              "Invalid email or password",
-              style: TextStyle(fontSize: 16),
-            ),
-          ),
-        );
-      }
+      // Proceed if the fields are not empty
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DashboardScreen(),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+          title: const Text("The Beauty Aesthetics"),
+          backgroundColor: const Color.fromARGB(
+              255, 255, 233, 244) // Apply the primary color from theme
+          ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
@@ -79,7 +67,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     color: Color(0xFF4B4B4B),
-                    fontFamily: 'OpenSans',
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -90,7 +77,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     labelText: 'Email',
                     labelStyle: const TextStyle(
-                      fontFamily: 'OpenSans',
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF8B5E83),
                     ),
@@ -147,7 +133,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ElevatedButton(
                   onPressed: _handleLogin,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFEE3A60),
                     padding: const EdgeInsets.symmetric(vertical: 15.0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25.0),
@@ -176,6 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: TextStyle(
                         fontSize: 14,
                         color: Color(0xFF4B4B4B),
+                        fontFamily: 'Montserrat-Italic',
                       ),
                     ),
                     GestureDetector(
@@ -190,8 +176,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: const Text(
                         "Sign Up",
                         style: TextStyle(
-                          color: Color(0xFFEE3A60),
                           fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 255, 46, 46),
                           fontSize: 16,
                         ),
                       ),

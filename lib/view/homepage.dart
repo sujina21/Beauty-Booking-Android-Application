@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sprint_1/view/cart_screen.dart';
+import 'package:sprint_1/view/discover_screen.dart';
 import 'package:sprint_1/view/makeup_screen.dart';
 import 'package:sprint_1/view/nails_screen.dart';
-import 'package:sprint_1/view/discover_screen.dart'; 
-import 'package:sprint_1/view/cart_screen.dart'; 
-import 'package:sprint_1/view/profile_screen.dart'; 
+import 'package:sprint_1/view/profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -33,10 +33,10 @@ class HomeScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color.fromARGB(255, 110, 80, 80),
           borderRadius: BorderRadius.circular(30),
           boxShadow: const [
-           BoxShadow(
+            BoxShadow(
               color: Colors.grey,
               blurRadius: 5,
               spreadRadius: 2,
@@ -46,9 +46,10 @@ class HomeScreen extends StatelessWidget {
         ),
         child: const TextField(
           decoration: InputDecoration(
-            hintText: "Search for service",
-            hintStyle: TextStyle(color: Colors.grey),
-            prefixIcon: Icon(Icons.search, color: Colors.grey),
+            hintText: "Search for products",
+            hintStyle: TextStyle(color: Color.fromARGB(255, 198, 191, 191)),
+            prefixIcon:
+                Icon(Icons.search, color: Color.fromARGB(255, 198, 191, 191)),
             border: InputBorder.none,
             contentPadding: EdgeInsets.symmetric(vertical: 15),
           ),
@@ -64,7 +65,7 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader("Services", "view all services"),
+          _buildSectionHeader("Services", ""),
           const SizedBox(height: 10),
           _buildImageRow([
             _buildServiceCard(context, "assets/image/makeup.jpg", "Makeup",
@@ -84,7 +85,7 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader("Products", "view all Products"),
+          _buildSectionHeader("Products", ""),
           const SizedBox(height: 10),
           _buildImageRow([
             _buildProductCard("assets/image/product1.jpg", "Rs. 2000/-"),
@@ -135,31 +136,36 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Service Card with Navigation
   Widget _buildServiceCard(
       BuildContext context, String imagePath, String title, Widget page) {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => page));
       },
-      child: Column(
-        children: [
-          Container(
-            height: 120,
-            width: 100,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              image: DecorationImage(
-                  image: AssetImage(imagePath), fit: BoxFit.cover),
+      child: Material(
+        elevation: 5,
+        borderRadius: BorderRadius.circular(15),
+        child: Column(
+          children: [
+            Container(
+              height: 120,
+              width: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                image: DecorationImage(
+                    image: AssetImage(imagePath), fit: BoxFit.cover),
+              ),
             ),
-          ),
-          const SizedBox(height: 5),
-          Text(
-            title,
-            style: const TextStyle(
-                fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
-          ),
-        ],
+            const SizedBox(height: 5),
+            Text(
+              title,
+              style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
+            ),
+          ],
+        ),
       ),
     );
   }
