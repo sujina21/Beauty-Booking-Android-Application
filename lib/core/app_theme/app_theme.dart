@@ -18,6 +18,5 @@ ThemeData getApplicationTheme() {
       ),
     ),
     scaffoldBackgroundColor: const Color(0xFFFDF2F8),
-
   );
 }
