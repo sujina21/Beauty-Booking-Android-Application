@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'homepage.dart';
+import 'package:sprint_1/view/homepage.dart'; // Import HomeScreen
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -13,10 +12,11 @@ class DashboardScreen extends StatelessWidget {
         centerTitle: true,
         title: const Text(
           "The Beauty Aesthetics",
-          style: TextStyle(fontSize: 25),
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          // bold text
         ),
       ),
-      body: const HomeScreen(),
+      body: const HomeScreen(), // Display HomeScreen here
     );
   }
 }

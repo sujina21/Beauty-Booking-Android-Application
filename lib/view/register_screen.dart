@@ -1,11 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:sprint_1/services/auth_service.dart';
+import 'package:get_it/get_it.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final AuthService _authService =
+        GetIt.instance<AuthService>(); // Access AuthService
+    final TextEditingController _nameController = TextEditingController();
+    final TextEditingController _emailController = TextEditingController();
+    final TextEditingController _passwordController = TextEditingController();
+    final TextEditingController _confirmPasswordController =TextEditingController();
+    final _formKey = GlobalKey<FormState>();
+
+    // Function to handle registration
+    void _handleRegister() async {
+      if (_formKey.currentState!.validate()) {
+        if (_passwordController.text == _confirmPasswordController.text) {
+          bool isRegistered = await _authService.register(
+            _emailController.text,
+            _passwordController.text,
+          );
+
+          if (isRegistered) {
+            // If registration is successful, navigate to login or dashboard
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Registration successful')),
+            );
+            Navigator.pop(context); // Go back to the login screen
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Registration failed')),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Passwords do not match')),
+          );
+        }
+      }
+    }
+
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("The Beauty Aesthetics"),
+        backgroundColor: const Color.fromARGB(255, 255, 233, 244),
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -39,10 +81,12 @@ class RegisterScreen extends StatelessWidget {
               const SizedBox(height: 40),
               // Form Fields
               Form(
+                key: _formKey,
                 child: Column(
                   children: [
                     // Full Name Input
-                    TextField(
+                    TextFormField(
+                      controller: _nameController,
                       decoration: InputDecoration(
                         labelText: 'Full Name',
                         labelStyle: const TextStyle(
@@ -58,10 +102,17 @@ class RegisterScreen extends StatelessWidget {
                         prefixIcon:
                             const Icon(Icons.person, color: Color(0xFF8B5E83)),
                       ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your full name';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 20),
                     // Email Address Input
-                    TextField(
+                    TextFormField(
+                      controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Email Address',
                         labelStyle: const TextStyle(
@@ -77,16 +128,22 @@ class RegisterScreen extends StatelessWidget {
                         prefixIcon:
                             const Icon(Icons.email, color: Color(0xFF8B5E83)),
                       ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email address';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 20),
                     // Password Input
-                    TextField(
+                    TextFormField(
+                      controller: _passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'Password',
                         labelStyle: const TextStyle(
                           color: Color(0xFF8B5E83),
-                          fontFamily: 'OpenSans',
                           fontWeight: FontWeight.w600,
                         ),
                         filled: true,
@@ -98,10 +155,17 @@ class RegisterScreen extends StatelessWidget {
                         prefixIcon:
                             const Icon(Icons.lock, color: Color(0xFF8B5E83)),
                       ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 20),
                     // Confirm Password Input
-                    TextField(
+                    TextFormField(
+                      controller: _confirmPasswordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'Confirm Password',
@@ -118,6 +182,12 @@ class RegisterScreen extends StatelessWidget {
                         prefixIcon: const Icon(Icons.lock_outline,
                             color: Color(0xFF8B5E83)),
                       ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please confirm your password';
+                        }
+                        return null;
+                      },
                     ),
                   ],
                 ),
@@ -125,9 +195,7 @@ class RegisterScreen extends StatelessWidget {
               const SizedBox(height: 40),
               // Sign-Up Button
               ElevatedButton(
-                onPressed: () {
-                  // Handle sign-up logic here
-                },
+                onPressed: _handleRegister,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFEE3A60),
                   padding: const EdgeInsets.symmetric(vertical: 15),
@@ -159,7 +227,7 @@ class RegisterScreen extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.pop(context); // Go back to the login screen
                     },
                     child: const Text(
                       "Log In",
