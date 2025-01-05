@@ -1,248 +1,366 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'package:sprint_1/view/cart_screen.dart';
-import 'package:sprint_1/view/discover_screen.dart';
-import 'package:sprint_1/view/makeup_screen.dart';
-import 'package:sprint_1/view/nails_screen.dart';
-import 'package:sprint_1/view/profile_screen.dart';
+import 'package:sprint_1/view/about_us.dart';
+import 'package:sprint_1/view/favourite_page.dart';
 
-class HomeScreen extends StatelessWidget {
+import 'makeup_screen.dart';
+import 'nails_screen.dart';
+import 'profile_screen.dart';
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 10),
-          _buildSearchBar(),
-          const SizedBox(height: 30),
-          _buildServicesSection(context),
-          const SizedBox(height: 30),
-          _buildProductsSection(),
-          const SizedBox(height: 30),
-          _buildResponsiveNavBar(context),
-        ],
-      ),
-    );
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    const HomeScreen(),
+    const FavouriteScreen(),
+    const AboutUsScreen(),
+    const ProfileScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
-  // Search Bar
-  Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 110, 80, 80),
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 5,
-              spreadRadius: 2,
-              offset: Offset(0, 3),
-            ),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 249, 242, 242),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeaderSection(),
+            const SizedBox(height: 20),
+            _buildServicesSection(context),
+            const SizedBox(height: 20),
+            _buildClassesSection(context),
+            const SizedBox(height: 20),
+            _buildExploreMore(context),
           ],
         ),
-        child: const TextField(
-          decoration: InputDecoration(
-            hintText: "Search for products",
-            hintStyle: TextStyle(color: Color.fromARGB(255, 198, 191, 191)),
-            prefixIcon:
-                Icon(Icons.search, color: Color.fromARGB(255, 198, 191, 191)),
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(vertical: 15),
+      ),
+      bottomNavigationBar: _buildBottomNavigationBar(context),
+    );
+  }
+
+  Widget _buildHeaderSection() {
+    return Stack(
+      children: [
+        Container(
+          height: 200,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.pinkAccent, Colors.orangeAccent],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(50),
+              bottomRight: Radius.circular(50),
+            ),
           ),
         ),
-      ),
-    );
-  }
-
-  // Services Section
-  Widget _buildServicesSection(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSectionHeader("Services", ""),
-          const SizedBox(height: 10),
-          _buildImageRow([
-            _buildServiceCard(context, "assets/image/makeup.jpg", "Makeup",
-                const MakeupScreen()),
-            _buildServiceCard(context, "assets/image/nails.jpg", "Nails",
-                const NailsScreen()),
-          ]),
-        ],
-      ),
-    );
-  }
-
-  // Products Section
-  Widget _buildProductsSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSectionHeader("Products", ""),
-          const SizedBox(height: 10),
-          _buildImageRow([
-            _buildProductCard("assets/image/product1.jpg", "Rs. 2000/-"),
-            _buildProductCard("assets/image/product2.jpg", "Rs. 2000/-"),
-            _buildProductCard("assets/image/product3.jpg", "Rs. 2000/-"),
-          ]),
-          _buildImageRow([
-            _buildProductCard("assets/image/product4.jpg", "Rs. 2000/-"),
-            _buildProductCard("assets/image/product5.jpg", "Rs. 2000/-"),
-            _buildProductCard("assets/image/product6.jpg", "Rs. 2000/-"),
-          ]),
-          _buildImageRow([
-            _buildProductCard("assets/image/product7.jpg", "Rs. 2000/-"),
-            _buildProductCard("assets/image/product8.jpg", "Rs. 2000/-"),
-            _buildProductCard("assets/image/product9.jpg", "Rs. 2000/-"),
-          ]),
-        ],
-      ),
-    );
-  }
-
-  // Section Header
-  Widget _buildSectionHeader(String title, String linkText) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
-        ),
-        Text(
-          linkText,
-          style: const TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-              decoration: TextDecoration.underline),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
+          child: Row(
+            children: [
+              ZoomIn(
+                duration: const Duration(seconds: 1),
+                child: const CircleAvatar(
+                  radius: 40,
+                  backgroundImage: AssetImage('assets/image/makeup.jpg'),
+                ),
+              ),
+              const SizedBox(width: 20),
+              FadeInRight(
+                duration: const Duration(milliseconds: 800),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hello, Sujina!',
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text(
+                      "Let's start your beauty journey together!",
+                      style: TextStyle(fontSize: 12, color: Colors.white70),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
   }
 
-  // Helper method to build image row
-  Widget _buildImageRow(List<Widget> children) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: children,
+  Widget _buildServicesSection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Services',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 15),
+          Column(
+            children: [
+              _buildServiceCard(
+                context,
+                'Makeup Services',
+                'Explore professional makeup artistry services.',
+                const MakeupScreen(),
+                'assets/image/makeup.jpg', // Image for Makeup Services
+              ),
+              _buildServiceCard(
+                context,
+                'Nail Services',
+                'Pamper your nails with expert care.',
+                const NailsScreen(),
+                'assets/image/nails.jpg', // Image for Nail Services
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 
   Widget _buildServiceCard(
-      BuildContext context, String imagePath, String title, Widget page) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => page));
-      },
-      child: Material(
-        elevation: 5,
-        borderRadius: BorderRadius.circular(15),
-        child: Column(
-          children: [
-            Container(
-              height: 120,
-              width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                image: DecorationImage(
-                    image: AssetImage(imagePath), fit: BoxFit.cover),
+    BuildContext context,
+    String title,
+    String description,
+    Widget destinationScreen,
+    String imagePath,
+  ) {
+    return FadeInUp(
+      duration: const Duration(milliseconds: 600),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => destinationScreen),
+          );
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(2, 2),
               ),
+            ],
+          ),
+          child: ListTile(
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              // Removed the image path for services.jpg
+              child: Image.asset(imagePath,
+                  width: 60, height: 60, fit: BoxFit.cover),
             ),
-            const SizedBox(height: 5),
-            Text(
+            title: Text(
               title,
               style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black),
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
-          ],
+            subtitle: Text(
+              description,
+              style: const TextStyle(fontSize: 14, color: Colors.black54),
+            ),
+            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
+          ),
         ),
       ),
     );
   }
 
-  // Product Card
-  Widget _buildProductCard(String imagePath, String price) {
-    return Column(
-      children: [
-        Container(
-          height: 100,
-          width: 100,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            image: DecorationImage(
-                image: AssetImage(imagePath), fit: BoxFit.cover),
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          price,
-          style: const TextStyle(
-              fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
-        ),
-      ],
-    );
-  }
-
-  // Responsive Bottom Navigation Bar
-  Widget _buildResponsiveNavBar(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          color: Colors.white,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildBottomNavItem(Icons.home, "Home", context, isActive: true),
-              _buildBottomNavItem(Icons.explore, "Discover", context),
-              _buildBottomNavItem(Icons.shopping_cart, "Cart", context),
-              _buildBottomNavItem(Icons.account_circle, "Profile", context),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  // Bottom Navigation Bar Item with Navigation
-  Widget _buildBottomNavItem(IconData icon, String label, BuildContext context,
-      {bool isActive = false}) {
-    return GestureDetector(
-      onTap: () {
-        // Navigate to respective pages
-        if (label == "Discover") {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const DiscoverScreen()));
-        } else if (label == "Cart") {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const CartScreen()));
-        } else if (label == "Profile") {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const ProfileScreen()));
-        }
-      },
+  Widget _buildClassesSection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: isActive ? Colors.black : Colors.grey),
-          const SizedBox(height: 2),
-          Text(
-            label,
+          const Text(
+            'Courses We Offer',
             style: TextStyle(
-                fontSize: 12, color: isActive ? Colors.black : Colors.grey),
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 15),
+          Column(
+            children: [
+              _buildClassCard(
+                '3 days Nails Workshop',
+                'Learn trending nail art techniques for a perfect foundation.',
+                'assets/image/nails.jpg',
+                Colors.pink[50],
+              ),
+              _buildClassCard(
+                'Basic Nails Course',
+                'Learn basic nail art techniques for your own self.',
+                'assets/image/nails.jpg',
+                Colors.pink[50],
+              ),
+              _buildClassCard(
+                'Basic Makeup Course',
+                'Understand the fundamentals of makeup artistry.',
+                'assets/image/makeup.jpg',
+                Colors.blue[50],
+              ),
+              _buildClassCard(
+                'Advanced Nails Class',
+                'Master advanced techniques for nail art.',
+                'assets/image/nails.jpg',
+                Colors.orange[50],
+              ),
+              _buildClassCard(
+                'Professional Nails Class',
+                'Become a professional in nail care and art.',
+                'assets/image/nails.jpg',
+                Colors.green[50],
+              ),
+              _buildClassCard(
+                'Professional Makeup Class',
+                'Advance your skills to become a makeup professional.',
+                'assets/image/makeup.jpg',
+                Colors.purple[50],
+              ),
+              _buildClassCard(
+                'Masters Nails class',
+                'Join our masterclass to excel in nail art and care.',
+                'assets/image/nails.jpg',
+                Colors.red[50],
+              ),
+            ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildClassCard(String title, String description, String imagePath,
+      Color? backgroundColor) {
+    return FadeInUp(
+      duration: const Duration(milliseconds: 600),
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(2, 2),
+            ),
+          ],
+        ),
+        child: ListTile(
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.asset(imagePath,
+                width: 60, height: 60, fit: BoxFit.cover),
+          ),
+          title: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          subtitle: Text(
+            description,
+            style: const TextStyle(fontSize: 14, color: Colors.black54),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExploreMore(BuildContext context) {
+    return Center(
+      child: ElevatedButton(
+        onPressed: () {
+          // Add navigation logic to explore more classes or features
+        },
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+        child: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+          child: Text(
+            'Explore More',
+            style: TextStyle(fontSize: 18, color: Colors.white),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomNavigationBar(BuildContext context) {
+    return BottomNavigationBar(
+      currentIndex: 0,
+      selectedItemColor: Colors.pinkAccent,
+      unselectedItemColor: Colors.grey,
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorites'),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.person_pin_circle_outlined), label: 'About Us'),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+      ],
+      onTap: (index) {
+        if (index == 0) {
+          // Stay on the home page
+        } else if (index == 1) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const FavouriteScreen()),
+          );
+        } else if (index == 2) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AboutUsScreen()),
+          );
+        } else if (index == 3) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+          );
+        }
+      },
     );
   }
 }

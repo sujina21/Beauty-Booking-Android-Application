@@ -13,9 +13,7 @@ class DashboardScreen extends StatelessWidget {
         centerTitle: true,
         title: const Text(
           "The Beauty Aesthetics",
-          style: TextStyle(
-            fontSize: 25,
-          ),
+          style: TextStyle(fontSize: 25),
         ),
       ),
       body: const HomeScreen(),
