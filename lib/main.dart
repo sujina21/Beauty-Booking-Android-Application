@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sprint_1/app.dart';
-import 'package:sprint_1/service_locator/service_locator.dart';
+import 'package:sprint_1/app/app.dart';
+import 'package:sprint_1/services/service_locator.dart';
 
 void main() {
-  setupServiceLocator(); // Register DashboardService
-  setupAuthServiceLocator(); // Register AuthService
+  setupLocator(); // Setup for service locator
+
   runApp(const MyApp());
 }

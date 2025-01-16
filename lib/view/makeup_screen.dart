@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:sprint_1/view/dashboard_screen.dart';
+
+import 'dashboard_screen.dart'; // Make sure this path is correct.
 
 class MakeupScreen extends StatelessWidget {
   const MakeupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Makeup Services Data
     final List<Map<String, String>> makeupServices = [
       {
         'image': 'assets/image/bridal_makeup.jpg',
@@ -37,10 +37,8 @@ class MakeupScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Makeup Services"),
-        backgroundColor: Colors.black,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back), // Back Button Icon
-          color: Colors.white,
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -56,11 +54,7 @@ class MakeupScreen extends StatelessWidget {
           children: [
             const Text(
               "Explore Makeup Services",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Expanded(
@@ -78,11 +72,9 @@ class MakeupScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    elevation: 4,
+                    elevation: 8,
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Image Section
                         Expanded(
                           child: ClipRRect(
                             borderRadius: const BorderRadius.only(
@@ -92,10 +84,10 @@ class MakeupScreen extends StatelessWidget {
                             child: Image.asset(
                               makeup['image']!,
                               fit: BoxFit.cover,
+                              width: double.infinity,
                             ),
                           ),
                         ),
-                        // Details Section
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
@@ -107,6 +99,7 @@ class MakeupScreen extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
+                              const SizedBox(height: 4),
                               Text(
                                 makeup['description']!,
                                 style: const TextStyle(
@@ -121,7 +114,6 @@ class MakeupScreen extends StatelessWidget {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black,
                                 ),
                               ),
                             ],
