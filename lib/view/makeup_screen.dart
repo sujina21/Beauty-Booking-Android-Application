@@ -36,9 +36,12 @@ class MakeupScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Makeup Services"),
+        title: const Text("Makeup Services",
+            style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.black,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -115,6 +118,44 @@ class MakeupScreen extends StatelessWidget {
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
+                              ),
+                              const SizedBox(height: 12),
+                              // Row to display Favorite and Book Now buttons
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.favorite_border),
+                                    onPressed: () {
+                                      // Show snackbar when added to favorites
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Added to Favourites'),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 12),
+                                    ),
+                                    onPressed: () {
+                                      // Handle booking action here
+                                    },
+                                    child: const Text(
+                                      "Book Now",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),

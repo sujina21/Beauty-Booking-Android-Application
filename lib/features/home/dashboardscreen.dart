@@ -24,9 +24,9 @@ class DashboardTab extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12.0),
                 color: Colors.indigo,
               ),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
                     'Welcome to Hotelify!',
                     style: TextStyle(
@@ -255,7 +255,7 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> screens = const [
+    const List<Widget> screens = [
       DashboardTab(),
       BookingsTab(),
       ProfileTab(),
@@ -395,10 +395,10 @@ class BookingsTabState extends State<BookingsTab> {
           const SizedBox(height: 10),
           // Search Bar
           TextField(
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Search Rooms',
-              border: const OutlineInputBorder(),
-              prefixIcon: const Icon(Icons.search),
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.search),
             ),
             onChanged: (query) {
               setState(() {
@@ -515,7 +515,7 @@ class ProfileTab extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Profile Header
-            Center(
+            const Center(
               child: Column(
                 children: [
                   // Profile Picture
@@ -523,17 +523,17 @@ class ProfileTab extends StatelessWidget {
                     radius: 50,
                     backgroundImage: AssetImage('assets/images/profile.jpg'),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   // Name and Email
-                  const Text(
+                  Text(
                     'John Doe',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  const Text(
+                  SizedBox(height: 4),
+                  Text(
                     'johndoe@example.com',
                     style: TextStyle(
                       fontSize: 16,
@@ -554,20 +554,20 @@ class ProfileTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            Card(
-              margin: const EdgeInsets.symmetric(vertical: 8.0),
+            const Card(
+              margin: EdgeInsets.symmetric(vertical: 8.0),
               child: ListTile(
-                leading: const Icon(Icons.star, color: Colors.amber),
-                title: const Text('Membership Status'),
-                subtitle: const Text('Gold Member'),
+                leading: Icon(Icons.star, color: Colors.amber),
+                title: Text('Membership Status'),
+                subtitle: Text('Gold Member'),
               ),
             ),
-            Card(
-              margin: const EdgeInsets.symmetric(vertical: 8.0),
+            const Card(
+              margin:  EdgeInsets.symmetric(vertical: 8.0),
               child: ListTile(
-                leading: const Icon(Icons.card_giftcard, color: Colors.green),
-                title: const Text('Loyalty Points'),
-                subtitle: const Text('2,450 Points'),
+                leading:  Icon(Icons.card_giftcard, color: Colors.green),
+                title:  Text('Loyalty Points'),
+                subtitle:  Text('2,450 Points'),
               ),
             ),
             const SizedBox(height: 20),
