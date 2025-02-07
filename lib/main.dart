@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:sprint_1/app/app.dart';
-import 'package:sprint_1/services/service_locator.dart';
 
-void main() {
-  setupLocator(); // Setup for service locator
+import 'app/app.dart';
+import 'app/di/di.dart';
+import 'core/network/hive_service.dart';
 
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Initialize Hive Database
+  await HiveService().init();
+  await initDependencies(); // Initialize dependencies
+  runApp(
+    App(),
+  );
 }
