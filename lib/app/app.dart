@@ -1,48 +1,23 @@
+import 'package:beauty_booking_app/features/auth/presentation/view/login_view.dart';
+import 'package:beauty_booking_app/features/auth/presentation/view_model/login/login_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sprint_1/core/app_theme/app_theme.dart';
-import 'package:sprint_1/cubit/login_cubit.dart';
-import 'package:sprint_1/cubit/onboarding_cubit.dart';
-import 'package:sprint_1/cubit/register_cubit.dart';
-import 'package:sprint_1/features/auth/login_screen.dart';
-import 'package:sprint_1/features/auth/onboarding_screen.dart';
-import 'package:sprint_1/features/auth/register_screen.dart';
-import 'package:sprint_1/services/service_locator.dart';
-import 'package:sprint_1/view/about_us.dart';
-import 'package:sprint_1/view/dashboard_screen.dart';
-import 'package:sprint_1/view/favourite_page.dart';
-import 'package:sprint_1/view/profile_screen.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+import '../core/theme/app_theme.dart';
+import 'di/di.dart';
+
+class App extends StatelessWidget {
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-            create: (context) =>
-                locator<OnboardingCubit>()), // Provide OnboardingCubit
-        BlocProvider(
-            create: (context) => locator<LoginCubit>()), // Provide LoginCubit
-        BlocProvider(
-            create: (context) =>
-                locator<RegisterCubit>()), // Provide RegisterCubit
-      ],
-      child: MaterialApp(
-        initialRoute: "/",
-        debugShowCheckedModeBanner: false,
-        theme: getApplicationTheme(),
-        routes: {
-          "/": (context) => const DashboardScreen(),
-          "/login": (context) => const LoginScreen(),
-          "/onboarding": (context) => const OnboardingScreen(),
-          "/register": (context) => const RegisterScreen(),
-          "/dashboard": (context) => const DashboardScreen(),
-          "/profile": (context) => const ProfileScreen(),
-          "/favourite": (context) => const FavouriteScreen(),
-          "/about": (context) => const AboutUsScreen(),
-        },
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Beauty Booking App',
+      theme: AppTheme.getApplicationTheme(isDarkMode: false),
+      home: BlocProvider<LoginBloc>(
+        create: (context) => getIt<LoginBloc>(),
+        child: LoginView(),
       ),
     );
   }
