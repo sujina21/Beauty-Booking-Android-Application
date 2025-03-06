@@ -74,7 +74,7 @@ class _RegisterViewState extends State<RegisterView> {
               if (state.isImageLoading) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Uploading image...'),
+                    content: Text('Uploading image..'),
                     duration: Duration(seconds: 2),
                   ),
                 );
