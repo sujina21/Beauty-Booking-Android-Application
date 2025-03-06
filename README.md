@@ -1,5 +1,10 @@
 Welcome to the Beauty Booking App repository! This app is designed to make booking beauty services—like nails and makeup—quick and easy. It’s a perfect tool for anyone who wants to schedule their beauty appointments effortlessly!
 
+📱 Screenshots
+![Alt image](https://github.com/sujina21/Beauty-Booking-Android-Application/blob/master/assets/images/1.png)
+
+
+
 🚀 Features
 User-Friendly Booking: Seamlessly schedule your beauty services.
 Secure Data Handling: Using Hive and Shared Preferences for safe and smooth data storage.
@@ -31,5 +36,4 @@ WiFi Toggle Demo: A fun feature showing how toggling WiFi affects the app.
 Unit tests: 100% covered
 Widget & BLoC tests: Full coverage
 Integration tests: Ensures end-to-end functionality
-📱 Screenshots
-(Insert app screenshots here)
+
