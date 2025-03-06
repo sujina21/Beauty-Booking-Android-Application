@@ -1,7 +1,19 @@
 Welcome to the Beauty Booking App repository! This app is designed to make booking beauty services—like nails and makeup—quick and easy. It’s a perfect tool for anyone who wants to schedule their beauty appointments effortlessly!
 
 📱 Screenshots
+
+
 ![Alt image](https://github.com/sujina21/Beauty-Booking-Android-Application/blob/master/assets/images/1.png)
+![Alt image](https://github.com/sujina21/Beauty-Booking-Android-Application/blob/master/assets/images/2.png)
+![Alt image](https://github.com/sujina21/Beauty-Booking-Android-Application/blob/master/assets/images/3.png)
+![Alt image](https://github.com/sujina21/Beauty-Booking-Android-Application/blob/master/assets/images/4.png)
+![Alt image](https://github.com/sujina21/Beauty-Booking-Android-Application/blob/master/assets/images/5.png)
+![Alt image](https://github.com/sujina21/Beauty-Booking-Android-Application/blob/master/assets/images/6.png)
+![Alt image](https://github.com/sujina21/Beauty-Booking-Android-Application/blob/master/assets/images/7.png)
+![Alt image](https://github.com/sujina21/Beauty-Booking-Android-Application/blob/master/assets/images/8.png)
+![Alt image](https://github.com/sujina21/Beauty-Booking-Android-Application/blob/master/assets/images/9.png)
+![Alt image](https://github.com/sujina21/Beauty-Booking-Android-Application/blob/master/assets/images/10.png)
+![Alt image](https://github.com/sujina21/Beauty-Booking-Android-Application/blob/master/assets/images/11.png)
 
 
 
