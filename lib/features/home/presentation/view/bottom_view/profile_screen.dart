@@ -51,7 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: CircleAvatar(
                             radius: 45,
                             backgroundImage:
-                                AssetImage('assets/images/makeup.jpg'),
+                                AssetImage('assets/images/women.png'),
                           ),
                         ),
                         SizedBox(width: 20),
@@ -67,7 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                             Text(
-                              "sujinast307@gmail.com",
+                              "sujinasht@gmail.com",
                               style:
                                   TextStyle(fontSize: 16, color: Colors.black),
                             ),

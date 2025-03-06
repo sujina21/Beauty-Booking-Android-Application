@@ -24,7 +24,7 @@
 //   );
 
 //   final authEntity = UserEntity(
-//     id: null,
+    
 //     name: UserParams.name,
 //     phone: UserParams.phone,
 //     email: UserParams.email,
