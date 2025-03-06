@@ -18,7 +18,7 @@ class BookingScreen extends StatefulWidget {
 
 class _BookingScreenState extends State<BookingScreen> {
   var allBooking;
-  double? proximityValue = 0.0; // Store proximity value
+  double? proximityValue = 1.0; // Store proximity value
   final int _selectedIndex = 1;
   bool isShaking = false;
 
@@ -125,7 +125,10 @@ class _BookingScreenState extends State<BookingScreen> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Proximity Value: ${proximityValue!.toStringAsFixed(2)}'),
+                Text(
+                  'Proximity Value: ${proximityValue!.toStringAsFixed(2)}',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
               ],
             ),
             backgroundColor: getBackgroundColor(
@@ -135,7 +138,10 @@ class _BookingScreenState extends State<BookingScreen> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('Close'),
+                child: const Text(
+                  'Close',
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
             ],
           );
@@ -146,12 +152,12 @@ class _BookingScreenState extends State<BookingScreen> {
 
   // Function to return a background color based on proximity value
   Color getBackgroundColor(double proximityValue) {
-    if (proximityValue < 5.0) {
-      return Colors.green; // Near user, green color
-    } else if (proximityValue < 10.0) {
-      return Colors.yellow; // Medium distance, yellow color
+    if (proximityValue < 0.3) {
+      return Colors.green; // Close to the sensor, green color
+    } else if (proximityValue < 0.7) {
+      return Colors.yellow; // Medium proximity, yellow color
     } else {
-      return Colors.red; // Far away, red color
+      return Colors.red; // Far from the sensor, red color
     }
   }
 
@@ -159,6 +165,7 @@ class _BookingScreenState extends State<BookingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("The Beauty Aesthetics")),
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

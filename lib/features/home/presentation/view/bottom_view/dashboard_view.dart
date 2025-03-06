@@ -352,7 +352,7 @@ class DashboardScreenState extends State<DashboardScreen> {
         BottomNavigationBarItem(
             icon: Icon(Icons.book_online), label: 'Bookings'),
         BottomNavigationBarItem(
-            icon: Icon(Icons.person_pin_circle_outlined), label: 'About Us'),
+            icon: Icon(Icons.info_outline), label: 'About Us'),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
       ],
       onTap: (index) {
