@@ -6,6 +6,8 @@ import 'package:beauty_booking_app/features/home/presentation/view/bottom_view/d
 import 'package:beauty_booking_app/features/home/presentation/view/bottom_view/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:proximity_sensor/proximity_sensor.dart';
+import 'package:sensors_plus/sensors_plus.dart'; // Import for shake detection
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key});
@@ -16,7 +18,9 @@ class BookingScreen extends StatefulWidget {
 
 class _BookingScreenState extends State<BookingScreen> {
   var allBooking;
-  final int _selectedIndex = 1; // Booking screen is at index 1
+  double? proximityValue = 0.0; // Store proximity value
+  final int _selectedIndex = 1;
+  bool isShaking = false;
 
   void _onItemTapped(int index) {
     if (_selectedIndex == index) return; // Prevent unnecessary reload
@@ -44,27 +48,110 @@ class _BookingScreenState extends State<BookingScreen> {
     );
   }
 
-  /// Fetch User's Bookings with Authorization Token
+  // Function to fetch bookings from the API
   Future<dynamic> fetchBookings() async {
     String? token = ApiEndpoints.accessToken;
-
-    print("TOKEN ===> $token");
-
     final response = await http.get(
-      Uri.parse(ApiEndpoints.allUserBooking), // Replace with actual API
+      Uri.parse(ApiEndpoints.allUserBooking),
       headers: {
-        'Authorization': 'Bearer $token', // Send Bearer Token
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
     );
-
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
       allBooking = data["data"];
-      print("MY Booking --> $allBooking");
       return allBooking;
     } else {
       throw Exception('Failed to load bookings');
+    }
+  }
+
+  // Shake detection
+  void detectShake() {
+    accelerometerEvents.listen((AccelerometerEvent event) {
+      double x = event.x;
+      double y = event.y;
+      double z = event.z;
+
+      double shakeThreshold = 12; // Customize sensitivity
+      if ((x.abs() + y.abs() + z.abs()) > shakeThreshold && !isShaking) {
+        setState(() {
+          isShaking = true;
+        });
+
+        // Trigger refresh or any other action
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Shake Detected! Refreshing data...')),
+        );
+
+        // Call your refresh function (optional)
+        fetchBookings().then((value) {
+          setState(() {
+            isShaking = false;
+          });
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    detectShake();
+    detectProximity();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  // Function to detect proximity sensor value and show color-changing dialog
+  void detectProximity() {
+    // Listen to the proximity sensor events
+    ProximitySensor.events.listen((event) {
+      print("Event value --> $event");
+      setState(() {
+        proximityValue = event.toDouble(); // Store proximity value
+      });
+
+      // Show a dialog with dynamic background color based on proximity
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Proximity Sensor Alert'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Proximity Value: ${proximityValue!.toStringAsFixed(2)}'),
+              ],
+            ),
+            backgroundColor: getBackgroundColor(
+                proximityValue!), // Get color based on proximity value
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+    });
+  }
+
+  // Function to return a background color based on proximity value
+  Color getBackgroundColor(double proximityValue) {
+    if (proximityValue < 5.0) {
+      return Colors.green; // Near user, green color
+    } else if (proximityValue < 10.0) {
+      return Colors.yellow; // Medium distance, yellow color
+    } else {
+      return Colors.red; // Far away, red color
     }
   }
 
@@ -82,72 +169,78 @@ class _BookingScreenState extends State<BookingScreen> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: FutureBuilder(
-                future: fetchBookings(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text("Error: ${snapshot.error}"));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text("No bookings available"));
-                  }
-
-                  return ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      var booking = snapshot.data![index];
-                      var bookService = booking["serviceId"];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        elevation: 4,
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(16),
-                          title: Text(
-                            bookService['title'] ?? 'Service not available',
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  'Date: ${booking['bookingDate'] ?? "N/A"}\nTime:${booking['bookingTime']}',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold)),
-                              Text(
-                                'Status: ${booking['status'] ?? "N/A"}',
-                                style: TextStyle(
-                                    color: getColor(booking['status']),
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                          trailing: booking['serviceId']['image'] != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    booking['serviceId']['image'],
-                                    width: 80,
-                                    height: 80,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return const Icon(
-                                          Icons.image_not_supported,
-                                          size: 50,
-                                          color: Colors.grey);
-                                    },
-                                  ),
-                                )
-                              : const Icon(Icons.image_not_supported,
-                                  size: 50, color: Colors.grey),
-                        ),
-                      );
-                    },
-                  );
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await fetchBookings();
                 },
+                child: FutureBuilder(
+                  future: fetchBookings(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text("Error: ${snapshot.error}"));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text("No bookings available"));
+                    }
+
+                    return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        var booking = snapshot.data![index];
+                        var bookService = booking["serviceId"];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          elevation: 4,
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.all(16),
+                            title: Text(
+                              bookService['title'] ?? 'Service not available',
+                              style: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                    'Date: ${booking['bookingDate'] ?? "N/A"}\nTime:${booking['bookingTime']}',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold)),
+                                Text(
+                                  'Status: ${booking['status'] ?? "N/A"}',
+                                  style: TextStyle(
+                                      color: getColor(booking['status']),
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            trailing: booking['serviceId']['image'] != null
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.network(
+                                      booking['serviceId']['image'],
+                                      width: 80,
+                                      height: 80,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return const Icon(
+                                            Icons.image_not_supported,
+                                            size: 50,
+                                            color: Colors.grey);
+                                      },
+                                    ),
+                                  )
+                                : const Icon(Icons.image_not_supported,
+                                    size: 50, color: Colors.grey),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
           ],

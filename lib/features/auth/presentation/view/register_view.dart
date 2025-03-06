@@ -18,8 +18,8 @@ class _RegisterViewState extends State<RegisterView> {
   final _gap = const SizedBox(height: 8);
   final _key = GlobalKey<FormState>();
   final _nameController = TextEditingController(text: 'Sujina Shrestha');
-  final _phoneController = TextEditingController(text: '9846031450');
-  final _emailController = TextEditingController(text: 'sujina@gmail.com');
+  final _phoneController = TextEditingController(text: '9846031459');
+  final _emailController = TextEditingController(text: 'sujinasht@gmail.com');
   final _passwordController = TextEditingController(text: 'sujina123');
   final _confirmPasswordController = TextEditingController(text: 'sujina123');
 
@@ -319,7 +319,7 @@ class _RegisterViewState extends State<RegisterView> {
                         onPressed: () {
                           if (_key.currentState!.validate()) {
                             context.read<RegisterBloc>().add(RegisterUser(
-                              _img!,
+                                  _img!,
                                   name: _nameController.text,
                                   phone: _phoneController.text,
                                   email: _emailController.text,
