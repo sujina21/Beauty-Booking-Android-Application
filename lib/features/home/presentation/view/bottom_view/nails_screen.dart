@@ -2,6 +2,10 @@ import 'dart:convert';
 
 import 'package:beauty_booking_app/app/constants/api_endpoints.dart';
 import 'package:beauty_booking_app/features/home/presentation/view/bottom_view/dashboard_view.dart';
+import 'package:esewa_flutter_sdk/esewa_config.dart';
+import 'package:esewa_flutter_sdk/esewa_flutter_sdk.dart';
+import 'package:esewa_flutter_sdk/esewa_payment.dart';
+import 'package:esewa_flutter_sdk/esewa_payment_success_result.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -35,9 +39,11 @@ class _NailScreenState extends State<NailScreen> {
   }
 
   /// Function to Open Date & Time Picker
-  Future<void> openBookingPopup(BuildContext context, String serviceId) async {
+  Future<void> openBookingPopup(BuildContext context, String serviceId,
+      String serviceName, String amount) async {
     DateTime? selectedDate;
     TimeOfDay? selectedTime;
+    String appointmentPlace = "Studio"; // Default selection
 
     await showDialog(
       context: context,
@@ -81,6 +87,61 @@ class _NailScreenState extends State<NailScreen> {
                       }
                     },
                   ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Where do you want your appointment?",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Horizontal radio buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Radio<String>(
+                            value: "Home Service",
+                            groupValue: appointmentPlace,
+                            onChanged: (value) {
+                              setState(() {
+                                appointmentPlace = value!;
+                              });
+                            },
+                          ),
+                          const Text("Home Service"),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Radio<String>(
+                            value: "Studio",
+                            groupValue: appointmentPlace,
+                            onChanged: (value) {
+                              setState(() {
+                                appointmentPlace = value!;
+                              });
+                            },
+                          ),
+                          const Text("Studio"),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // 30% upfront payment info in green
+                  Text(
+                    "40% upfront payment: Rs.${(double.tryParse(amount) ?? 0) * 0.4}",
+                    style: const TextStyle(
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.0),
+                  ),
                 ],
               ),
               actions: [
@@ -100,9 +161,16 @@ class _NailScreenState extends State<NailScreen> {
                       return;
                     }
                     Navigator.pop(context);
-                    await bookService(serviceId, selectedDate!, selectedTime!);
+                    await openEsewaPayment(
+                        context: context,
+                        serviceId: serviceId,
+                        serviceName: serviceName,
+                        serviceAmount: double.tryParse(amount) ?? 0,
+                        selectedDate: selectedDate!,
+                        selectedTime: selectedTime!,
+                        appointmentPlace: appointmentPlace);
                   },
-                  child: const Text("Confirm"),
+                  child: const Text("Pay Now"),
                 ),
               ],
             );
@@ -112,9 +180,86 @@ class _NailScreenState extends State<NailScreen> {
     );
   }
 
+  void _handlePaymentFailure(BuildContext context, dynamic data) {
+    final theme = Theme.of(context);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content:
+            Text('Payment Failed: $data', style: theme.textTheme.bodyLarge),
+        backgroundColor: Colors.red.shade400,
+      ),
+    );
+  }
+
+  void _handlePaymentCancellation(BuildContext context, dynamic data) {
+    final theme = Theme.of(context);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content:
+            Text('Payment Cancelled: $data', style: theme.textTheme.bodyLarge),
+        backgroundColor: Colors.orange.shade400,
+      ),
+    );
+  }
+
+  Future<void> openEsewaPayment(
+      {required BuildContext context,
+      required String serviceId,
+      required String serviceName,
+      required double serviceAmount,
+      required DateTime selectedDate,
+      required TimeOfDay selectedTime,
+      required String appointmentPlace}) async {
+    try {
+      // Calculate 40% upfront payment
+      String upfront = (serviceAmount * 0.4).toStringAsFixed(2);
+
+      // Create eSewa payment object
+      final payment = EsewaPayment(
+        productId: serviceId,
+        productName: serviceName,
+        productPrice: upfront,
+        callbackUrl:
+            'https://yourdomain.com/callback', // Replace with your callback URL or leave as is if not used
+      );
+
+      EsewaFlutterSdk.initPayment(
+          esewaConfig: EsewaConfig(
+            environment: Environment.test,
+            clientId: 'JB0BBQ4aD0UqIThFJwAKBgAXEUkEGQUBBAwdOgABHD4DChwUAB0R',
+            secretId: 'BhwIWQQADhIYSxILExMcAgFXFhcOBwAKBgAXEQ==',
+          ),
+          esewaPayment: payment,
+          onPaymentSuccess: (EsewaPaymentSuccessResult result) async {
+            bookService(
+                serviceId, selectedDate, selectedTime, appointmentPlace);
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Booking Confirmed!"),
+              backgroundColor: Colors.green,
+            ));
+          },
+          onPaymentFailure: (data) {
+            _handlePaymentFailure(context, data);
+          },
+          onPaymentCancellation: (data) {
+            _handlePaymentCancellation(context, data);
+          });
+    } catch (e) {
+      // Handle error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Payment error: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   /// API Call to Book Service
-  Future<void> bookService(
-      String serviceId, DateTime date, TimeOfDay time) async {
+  Future<void> bookService(String serviceId, DateTime date, TimeOfDay time,
+      String appointmentPlace) async {
     // Format Date & Time
     String formattedDate = DateFormat('yyyy-MM-dd').format(date);
     String formattedTime =
@@ -132,6 +277,7 @@ class _NailScreenState extends State<NailScreen> {
           "serviceType": "Nail",
           "bookingDate": formattedDate,
           "bookingTime": formattedTime,
+          "appointmentPlace": appointmentPlace
         }),
       );
 
@@ -160,7 +306,7 @@ class _NailScreenState extends State<NailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Nail Services"),
-        backgroundColor: Colors.black,
+        backgroundColor: Color.fromARGB(255, 255, 39, 111),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back), // Back Button Icon
           color: Colors.white,
@@ -202,115 +348,153 @@ class _NailScreenState extends State<NailScreen> {
                         crossAxisCount: 2,
                         mainAxisSpacing: 12,
                         crossAxisSpacing: 12,
-                        childAspectRatio: 0.75,
+                        childAspectRatio: 0.7,
                       ),
                       itemBuilder: (context, index) {
                         final nail = snapshot.data![index];
-                        return Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 8,
-                          shadowColor: Colors.grey.withOpacity(0.5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              // Image Section
-                              Expanded(
-                                child: ClipRRect(
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(12),
-                                    topRight: Radius.circular(12),
-                                  ),
-                                  child: Image.network(
-                                    nail['image']!,
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                  ),
-                                ),
-                              ),
-                              // Details Section
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      nail['title']!,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      nail['description'][0]!,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      nail['price']!,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              // Buttons Section
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
-                                child:
+                        bool isFavourite = false;
 
-                                    // Row to display Favorite and Book Now buttons
-                                    Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.favorite_border),
-                                      onPressed: () {
-                                        // Show snackbar when added to favorites
+                        return StatefulBuilder(
+                          builder: (context, setState) {
+                            return Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 6,
+                              shadowColor: Colors.grey.withOpacity(0.4),
+                              child: Stack(
+                                children: [
+                                  // Card Content
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      // Image with Favourite Icon
+                                      Expanded(
+                                        child: ClipRRect(
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(16),
+                                            topRight: Radius.circular(16),
+                                          ),
+                                          child: Image.network(
+                                            nail['image']!,
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                          ),
+                                        ),
+                                      ),
+                                      // Details Section
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              nail['title']!,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              "Rs. ${nail['price']!}",
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.deepOrange,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      // Book Now Button
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 8),
+                                        child: SizedBox(
+                                          width: double.infinity,
+                                          child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Color.fromARGB(
+                                                  255, 255, 39, 111),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 10),
+                                            ),
+                                            onPressed: () {
+                                              openBookingPopup(
+                                                  context,
+                                                  nail["_id"],
+                                                  nail['title'],
+                                                  nail['price']!);
+                                            },
+                                            child: const Text(
+                                              "Book Now",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  // Favourite Icon Positioned
+                                  Positioned(
+                                    top: 8,
+                                    right: 8,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          isFavourite = !isFavourite;
+                                        });
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
-                                          const SnackBar(
-                                            content:
-                                                Text('Added to Favourites'),
+                                          SnackBar(
+                                            content: Text(isFavourite
+                                                ? 'Added to Favourites'
+                                                : 'Removed from Favourites'),
                                           ),
                                         );
                                       },
-                                    ),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.4),
+                                              spreadRadius: 1,
+                                              blurRadius: 4,
+                                            )
+                                          ],
                                         ),
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 12),
-                                      ),
-                                      onPressed: () {
-                                        // Handle booking action here
-                                        openBookingPopup(context, nail["_id"]);
-                                      },
-                                      child: const Text(
-                                        "Book Now",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
+                                        padding: const EdgeInsets.all(6),
+                                        child: Icon(
+                                          isFavourite
+                                              ? Icons.favorite
+                                              : Icons.favorite_border,
+                                          color: isFavourite
+                                              ? Colors.red
+                                              : Colors.grey,
+                                          size: 24,
                                         ),
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            );
+                          },
                         );
                       },
                     );
