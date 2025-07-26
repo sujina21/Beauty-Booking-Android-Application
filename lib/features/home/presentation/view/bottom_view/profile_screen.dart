@@ -1,8 +1,12 @@
+import 'dart:convert';
+
+import 'package:beauty_booking_app/app/constants/api_endpoints.dart';
 import 'package:beauty_booking_app/features/auth/presentation/view/login_view.dart';
 import 'package:beauty_booking_app/features/home/presentation/view/bottom_view/about_us.dart';
 import 'package:beauty_booking_app/features/home/presentation/view/bottom_view/booking_screen.dart';
 import 'package:beauty_booking_app/features/home/presentation/view/bottom_view/dashboard_view.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -50,8 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Center(
                           child: CircleAvatar(
                             radius: 45,
-                            backgroundImage:
-                                AssetImage('assets/images/women.png'),
+                            backgroundImage: AssetImage('assets/images/me.png'),
                           ),
                         ),
                         SizedBox(width: 20),
@@ -88,7 +91,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.pink,
+                    color: Color.from(
+                        alpha: 1, red: 0.914, green: 0.118, blue: 0.388),
                   ),
                 ),
               ),
@@ -151,10 +155,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ],
                     ),
-              const SizedBox(height: 20),
-
-              const SizedBox(height: 20),
-
+              const SizedBox(height: 10),
+              Divider(
+                height: 1.0,
+                thickness: 1.0,
+                color: Colors.black38,
+              ),
+              const SizedBox(height: 10),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: Text(
+                  'Change Password',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => showChangePasswordDialog(context),
+                child: const Card(
+                  margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 20.0),
+                  child: ListTile(
+                      leading: Icon(Icons.lock, color: Colors.blue),
+                      title: Text('Click here to change password')),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Divider(
+                height: 1.0,
+                thickness: 1.0,
+                color: Colors.black38,
+              ),
+              const SizedBox(height: 10),
               // Notification Preferences
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -181,7 +211,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   });
                 },
               ),
-              const SizedBox(height: 20),
+              Divider(
+                height: 1.0,
+                thickness: 1.0,
+                color: Colors.black38,
+              ),
+              const SizedBox(height: 10),
+              // Notification Preferences
 
               // Invite a Friend Program
               const Padding(
@@ -199,7 +235,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   subtitle: Text('Earn discounts on your next booking.'),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10.0),
+              Divider(
+                height: 1.0,
+                thickness: 1.0,
+                color: Colors.black38,
+              ),
+              const SizedBox(height: 10),
+              // Notification Preferences
 
               // Getting Started Checklist
               const Padding(
@@ -212,7 +255,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const ChecklistItem(label: '• Complete your profile'),
               const ChecklistItem(label: '• Book your first service'),
               const ChecklistItem(label: '• Explore available courses'),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10.0),
+              Divider(
+                height: 1.0,
+                thickness: 1.0,
+                color: Colors.black38,
+              ),
+              const SizedBox(height: 10),
+              // Notification Preferences
 
               // Special Offers
               const Padding(
@@ -326,6 +376,217 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+}
+
+Future<bool> changePassword({
+  required String oldPassword,
+  required String newPassword,
+}) async {
+  final url = Uri.parse(ApiEndpoints.changePassword);
+  String? token = ApiEndpoints.accessToken;
+  final response = await http.post(
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": "Bearer $token"
+    },
+    body: jsonEncode({
+      'oldPassword': oldPassword,
+      'newPassword': newPassword,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    // Password reset successful
+    Map<String, dynamic> result = json.decode(response.body);
+    return result["success"];
+  } else {
+    // Handle error or failure
+    return false;
+  }
+}
+
+void showChangePasswordDialog(BuildContext context) {
+  bool isOldPasswordVisible = false;
+  bool isNewPasswordVisible = false;
+  bool isConfirmPasswordVisible = false;
+
+  TextEditingController oldPasswordController = TextEditingController();
+  TextEditingController newPasswordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: const Center(
+              child: Text(
+                'Change Password',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Old Password Field
+                  TextFormField(
+                    controller: oldPasswordController,
+                    obscureText: !isOldPasswordVisible,
+                    decoration: InputDecoration(
+                      labelText: 'Old Password',
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          isOldPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            isOldPasswordVisible = !isOldPasswordVisible;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // New Password Field
+                  TextFormField(
+                    controller: newPasswordController,
+                    obscureText: !isNewPasswordVisible,
+                    decoration: InputDecoration(
+                      labelText: 'New Password',
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          isNewPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            isNewPasswordVisible = !isNewPasswordVisible;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Confirm Password Field
+                  TextFormField(
+                    controller: confirmPasswordController,
+                    obscureText: !isConfirmPasswordVisible,
+                    decoration: InputDecoration(
+                      labelText: 'Confirm Password',
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          isConfirmPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            isConfirmPasswordVisible =
+                                !isConfirmPasswordVisible;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // Change Password Button
+                  Center(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () async {
+                        // Check for empty fields
+                        if (oldPasswordController.text.isEmpty ||
+                            newPasswordController.text.isEmpty ||
+                            confirmPasswordController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('All fields are required.'),
+                            ),
+                          );
+                          return;
+                        }
+
+                        // Check if new password and confirm password match
+                        if (newPasswordController.text !=
+                            confirmPasswordController.text) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Passwords do not match.'),
+                            ),
+                          );
+                          return;
+                        }
+
+                        // Proceed with password change API call
+                        bool result = await changePassword(
+                          oldPassword: oldPasswordController.text,
+                          newPassword: confirmPasswordController.text,
+                        );
+
+                        if (result) {
+                          Navigator.of(context).pop();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Password changed successfully!'),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Incorrect old password. Please try again.'),
+                            ),
+                          );
+                        }
+                      },
+                      child: const Text(
+                        'Change Password',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
 }
 
 // ChecklistItem widget
