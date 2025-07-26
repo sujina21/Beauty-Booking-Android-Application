@@ -11,6 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  esewa_flutter_sdk:
+    path: ./esewa_flutter_sdk
+
   cupertino_icons: ^1.0.8
   another_flushbar: ^1.12.30
   dio: ^5.7.0
@@ -46,6 +49,8 @@ dependencies:
   mockito: ^5.4.5
   flutter_launcher_icons: ^0.14.3
   coverage: ^1.11.1
+  esewa_flutter: ^2.0.0
+  fluttertoast: ^8.2.12
 
 dev_dependencies:
   flutter_test:
