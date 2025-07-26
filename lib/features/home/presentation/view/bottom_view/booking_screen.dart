@@ -6,8 +6,6 @@ import 'package:beauty_booking_app/features/home/presentation/view/bottom_view/d
 import 'package:beauty_booking_app/features/home/presentation/view/bottom_view/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:proximity_sensor/proximity_sensor.dart';
-import 'package:sensors_plus/sensors_plus.dart'; // Import for shake detection
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key});
@@ -48,8 +46,62 @@ class _BookingScreenState extends State<BookingScreen> {
     );
   }
 
-  // Function to fetch bookings from the API
-  Future<dynamic> fetchBookings() async {
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("The Beauty Aesthetics"),
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: "Pending"),
+              Tab(text: "Confirmed"),
+              Tab(text: "Cancelled"),
+            ],
+          ),
+        ),
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TabBarView(
+            children: [
+              BookingList(status: "Pending"),
+              BookingList(status: "Confirmed"),
+              BookingList(status: "Cancelled"),
+            ],
+          ),
+        ),
+        // ... your BottomNavigationBar code ...
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.pinkAccent,
+          unselectedItemColor: Colors.grey,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.book_online), label: 'Bookings'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.info_outline), label: 'About Us'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          ],
+          onTap: _onItemTapped,
+        ),
+      ),
+    );
+  }
+}
+
+class BookingList extends StatefulWidget {
+  final String status;
+  const BookingList({super.key, required this.status});
+
+  @override
+  State<BookingList> createState() => _BookingListState();
+}
+
+class _BookingListState extends State<BookingList> {
+  Future<dynamic> fetchBookings(String status) async {
     String? token = ApiEndpoints.accessToken;
     final response = await http.get(
       Uri.parse(ApiEndpoints.allUserBooking),
@@ -60,214 +112,36 @@ class _BookingScreenState extends State<BookingScreen> {
     );
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
-      allBooking = data["data"];
-      return allBooking;
+      var allBooking = data["data"];
+      // Filter bookings by status (case-insensitive)
+      var filteredBookings = allBooking
+          .where((booking) =>
+              (booking['status'] ?? '').toLowerCase() == status.toLowerCase())
+          .toList();
+      return filteredBookings;
     } else {
       throw Exception('Failed to load bookings');
     }
   }
 
-  // Shake detection
-  void detectShake() {
-    accelerometerEvents.listen((AccelerometerEvent event) {
-      double x = event.x;
-      double y = event.y;
-      double z = event.z;
-
-      double shakeThreshold = 12; // Customize sensitivity
-      if ((x.abs() + y.abs() + z.abs()) > shakeThreshold && !isShaking) {
-        setState(() {
-          isShaking = true;
-        });
-
-        // Trigger refresh or any other action
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Shake Detected! Refreshing data...')),
-        );
-
-        // Call your refresh function (optional)
-        fetchBookings().then((value) {
-          setState(() {
-            isShaking = false;
-          });
-        });
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    detectShake();
-    detectProximity();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  // Function to detect proximity sensor value and show color-changing dialog
-  void detectProximity() {
-    // Listen to the proximity sensor events
-    ProximitySensor.events.listen((event) {
-      print("Event value --> $event");
-      setState(() {
-        proximityValue = event.toDouble(); // Store proximity value
-      });
-
-      // Show a dialog with dynamic background color based on proximity
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Proximity Sensor Alert'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Proximity Value: ${proximityValue!.toStringAsFixed(2)}',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            backgroundColor: getBackgroundColor(
-                proximityValue!), // Get color based on proximity value
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text(
-                  'Close',
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-            ],
-          );
-        },
-      );
-    });
-  }
-
-  // Function to return a background color based on proximity value
-  Color getBackgroundColor(double proximityValue) {
-    if (proximityValue < 0.3) {
-      return Colors.green; // Close to the sensor, green color
-    } else if (proximityValue < 0.7) {
-      return Colors.yellow; // Medium proximity, yellow color
-    } else {
-      return Colors.red; // Far from the sensor, red color
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("The Beauty Aesthetics")),
-      backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const Text(
-              "Your Upcoming Bookings",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: () async {
-                  await fetchBookings();
-                },
-                child: FutureBuilder(
-                  future: fetchBookings(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text("Error: ${snapshot.error}"));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text("No bookings available"));
-                    }
-
-                    return ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        var booking = snapshot.data![index];
-                        var bookService = booking["serviceId"];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 8),
-                          elevation: 4,
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.all(16),
-                            title: Text(
-                              bookService['title'] ?? 'Service not available',
-                              style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                    'Date: ${booking['bookingDate'] ?? "N/A"}\nTime:${booking['bookingTime']}',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold)),
-                                Text(
-                                  'Status: ${booking['status'] ?? "N/A"}',
-                                  style: TextStyle(
-                                      color: getColor(booking['status']),
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                            trailing: booking['serviceId']['image'] != null
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.network(
-                                      booking['serviceId']['image'],
-                                      width: 80,
-                                      height: 80,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return const Icon(
-                                            Icons.image_not_supported,
-                                            size: 50,
-                                            color: Colors.grey);
-                                      },
-                                    ),
-                                  )
-                                : const Icon(Icons.image_not_supported,
-                                    size: 50, color: Colors.grey),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.pinkAccent,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.book_online), label: 'Bookings'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.info_outline), label: 'About Us'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-        onTap: _onItemTapped,
-      ),
+  Future<bool> cancelBooking(String bookingId) async {
+    String? token = ApiEndpoints.accessToken;
+    final url = Uri.parse('${ApiEndpoints.cancelBooking}/$bookingId');
+    final response = await http.patch(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
     );
+
+    if (response.statusCode == 200) {
+      // Cancellation successful
+      return true;
+    } else {
+      // Handle error or failure
+      return false;
+    }
   }
 
   Color getColor(String bookingStatus) {
@@ -280,5 +154,153 @@ class _BookingScreenState extends State<BookingScreen> {
       color = Colors.red;
     }
     return color;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: RefreshIndicator(
+        onRefresh: () async {
+          await fetchBookings(widget.status);
+        },
+        child: FutureBuilder(
+          future: fetchBookings(widget.status),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text("Error: ${snapshot.error}"));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text("No bookings available"));
+            }
+
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                var booking = snapshot.data![index];
+                var bookService = booking["serviceId"];
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text(
+                      bookService['title'] ?? 'Service not available',
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Date: ${booking['bookingDate'] ?? "N/A"}\nTime: ${booking['bookingTime']}',
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          'Status: ${booking['status'] ?? "N/A"}',
+                          style: TextStyle(
+                            color: getColor(booking['status']),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        // Show Cancel button only if status is Pending
+                        if ((booking['status'] ?? '').toLowerCase() ==
+                            'pending')
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: TextButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text('Confirm Cancellation'),
+                                      content: Text(
+                                        'Are you sure you want to delete this ${bookService['title']}?',
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text('No'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            Navigator.of(context)
+                                                .pop(); // Close dialog first
+
+                                            // Show a loading indicator (optional)
+                                            showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (_) => const Center(
+                                                  child:
+                                                      CircularProgressIndicator()),
+                                            );
+
+                                            bool success = await cancelBooking(
+                                                booking['_id']);
+
+                                            Navigator.of(context)
+                                                .pop(); // Close loading indicator
+
+                                            if (success) {
+                                              setState(() {
+                                                bookService
+                                                    .remove(booking['_id']);
+                                              });
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                    content: Text(
+                                                        '${bookService['title']} cancelled!')),
+                                              );
+                                            } else {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                    content: Text(
+                                                        'Failed to cancel ${bookService['title']}')),
+                                              );
+                                            }
+                                          },
+                                          child: const Text('Yes'),
+                                        )
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              child: const Text('Cancel Booking'),
+                            ),
+                          ),
+                      ],
+                    ),
+                    trailing: booking['serviceId']['image'] != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              booking['serviceId']['image'],
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons.image_not_supported,
+                                    size: 50, color: Colors.grey);
+                              },
+                            ),
+                          )
+                        : const Icon(Icons.image_not_supported,
+                            size: 50, color: Colors.grey),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
   }
 }
